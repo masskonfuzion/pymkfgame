@@ -1,7 +1,11 @@
+import math
+
+from pymkfgame.mkfmath import common
+
 class Vector(object):
-    def __init__(self):
+    def __init__(self, x=0.0, y=0.0, z=0.0):
         """ Initialize a 3D vector """
-        self.v = [0.0, 0.0, 0.0]
+        self.v = [float(x), float(y), float(z)]
 
     def __str__(self):
         return "< {}, {}, {} >".format(self.v[0], self.v[1], self.v[2])
@@ -20,6 +24,46 @@ class Vector(object):
         """
         if item in [0,1,2]:
             self.v[item] = float(value)
+
+    def __neg__(self):
+        return Vector(-self.v[0], -self.v[1], -self.v[2])
+
+    def __eq__(self, v):
+        """ Test equality
+
+            Note that Python DOES NOT automatically imply/implement that __ne__ is the logical negation of __eq__
+        """
+        if not common.floatEq( self.v[0], v.v[0] ):
+            return False
+        if not common.floatEq( self.v[1], v.v[1] ):
+            return False
+        if not common.floatEq( self.v[2], v.v[2] ):
+            return False
+        return True
+
+    def __ne__(self, v):
+        """ Test inequality
+
+            Note that Python DOES NOT automatically imply/implement that __ne__ is the logical negation of __eq__
+        """
+        if common.floatEq( self.v[0], v.v[0] ):
+            return False
+        if common.floatEq( self.v[1], v.v[1] ):
+            return False
+        if common.floatEq( self.v[2], v.v[2] ):
+            return False
+        return True
+
+    ##def normalize(self):
+    ##    """ Normalize this vector in-place """
+    ##    pass
+
+    ##def getNormalized(self):
+    ##    """ Return a computed normalized vector. This does not modify the vector object
+
+    ##        To normalize the vector in-place, use normalize()
+    ##    """
+    ##    pass
 
 
     @property
@@ -45,4 +89,63 @@ class Vector(object):
     @z.setter
     def z(self, value):
         self.v[2] = float(value)
+
+
+## ======================
+
+def vScale(v, k):
+    """ Scale Vector v, in-place """
+    v[0] *= float(k)
+    v[1] *= float(k)
+    v[2] *= float(k)
+
+def vGetScaled(v, k):
+    """ Return a new Vector, the result of scaling v by k """
+    return Vector(v[0] * float(k), v[1] * float(k), v[2] * float(k))
+
+def vLength(v):
+    """ Return Vector length """
+    return (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]) ** 0.5
+
+def vLengthSquared(v):
+    """ Return Vector length squared
+    
+        i.e., don't take the square root
+    """
+    return v[0]*v[0] + v[1]*v[1] + v[2]*v[2]
+
+def vNormalize(v):
+    """ Normalize Vector v in-place
+
+        We could use vLength to calculate vector length here, but we compute it inline, because.. speed, maybe?
+    
+    """
+    invLength = 1.0 / ((v[0]*v[0] + v[1]*v[1] + v[2]*v[2]) ** 0.5)
+
+    v[0] *= invLength
+    v[1] *= invLength
+    v[2] *= invLength
+
+def vGetNormalized(v):
+    """ Return a new Vector, which is the normalized v Vector) """
+    invLength = 1.0 / ((v[0]*v[0] + v[1]*v[1] + v[2]*v[2]) ** 0.5)
+
+    return Vector(v[0] * invLength, v[1] * invLength, v[2] * invLength)
+
+def vAdd(v, w):
+    """ Return a new Vector, which is the result of v + w """
+    return Vector(v[0] + w[0], v[1] + w[1], v[2] + w[2])
+
+def vSub(v, w):
+    """ Return a new Vector, which is the result of v - w """
+    return Vector(v[0] - w[0], v[1] - w[1], v[2] - w[2])
+
+def vDot(v, w):
+    """ Return the dot product of v . w """
+    return v[0]*w[0] + v[1]*w[1] + v[2]*w[2]
+
+def vCross(v, w):
+    """ Return a new Vector, which is the cross product, v x w """
+    return Vector(v[1]*w[2] - w[1]*v[2], v[2]*w[0] - w[2]*v[0], v[0]*w[1] - w[0]*v[1])
+
 
