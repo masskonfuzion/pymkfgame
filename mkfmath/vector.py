@@ -1,3 +1,9 @@
+"""
+3D Vector math class
+
+For the purpose of doing matrix math, these vectors will be treated as column vectors (see matrix class)
+"""
+
 import math
 
 from pymkfgame.mkfmath import common
