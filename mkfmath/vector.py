@@ -9,12 +9,21 @@ import math
 from pymkfgame.mkfmath import common
 
 class Vector(object):
-    def __init__(self, x=0.0, y=0.0, z=0.0):
-        """ Initialize a 3D vector """
-        self.v = [float(x), float(y), float(z)]
+    def __init__(self, x=0.0, y=0.0, z=0.0, w=0.0):
+        """ Initialize a 3D vector
+            
+            NOTE: Vectors have a homogeneous coordinate (w) of 0.0
+            But, if we want to treat an instance of this Vector class as a point (e.g., to transform via
+            translation matrices), set w = 1.0
+
+            TODO: Error checks? (prevent developer from creating invalid vector/point, e.g. w = non 0.0 or 1.0)
+        """
+
+        self.v = [float(x), float(y), float(z), float(w)]
 
     def __str__(self):
-        return "< {}, {}, {} >".format(self.v[0], self.v[1], self.v[2])
+        #return "[ {}, {}, {} ]".format( common.floatStr(self.v[0]), common.floatStr(self.v[1]), common.floatStr(self.v[2]) )
+        return "[ {}, {}, {}, {} ]".format( self.v[0], self.v[1], self.v[2], self.v[3] )
 
     def __getitem__(self, item):
         """ Get component indexed by item #
@@ -28,8 +37,7 @@ class Vector(object):
 
             NOTE: no error checking because we're lazy. We'll let the list obj do its own error checking
         """
-        if item in [0,1,2]:
-            self.v[item] = float(value)
+        self.v[item] = float(value)
 
     def __neg__(self):
         return Vector(-self.v[0], -self.v[1], -self.v[2])
@@ -45,6 +53,8 @@ class Vector(object):
             return False
         if not common.floatEq( self.v[2], v.v[2] ):
             return False
+        if not common.floatEq( self.v[3], v.v[3] ):
+            return False
         return True
 
     def __ne__(self, v):
@@ -57,6 +67,8 @@ class Vector(object):
         if common.floatEq( self.v[1], v.v[1] ):
             return False
         if common.floatEq( self.v[2], v.v[2] ):
+            return False
+        if common.floatEq( self.v[3], v.v[3] ):
             return False
         return True
 
@@ -96,7 +108,21 @@ class Vector(object):
     def z(self, value):
         self.v[2] = float(value)
 
+    @property
+    def w(self):
+        return self.v[3]
 
+    @w.setter
+    def w(self, value):
+        self.v[3] = float(value)
+
+    def makePoint(self):
+        """ Make into a point (i.e., set w = 1.0) """
+        self.v[3] = 1.0
+
+    def makeVector(self):
+        """ Make into a vector (i.e., set w = 0.0) """
+        self.v[3] = 0.0
 ## ======================
 
 def vScale(v, k):
