@@ -15,7 +15,7 @@
 #############################################################################
 
 import pygame
-from pymkfgame.message.display_msg import DisplayMessage
+from pymkfgame.display_msg.display_msg import DisplayMessage
 import os
 import sys
 
