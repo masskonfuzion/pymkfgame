@@ -192,8 +192,9 @@ class UIForm(object):
             uiItem['uiItem'].render(renderSurface)
 
             if uiItem['kbSelectIdx'] == self._kbSelection:
-                # TODO make this kb selection rectangle surround the item it's highlighting (or make it customizable). I'm allowing jank in because I want to quickly test it.
-                pygame.draw.rect(renderSurface, (192,128,0), (10, uiItem['uiItem']._position[1], 30, 30), 2)
+                # TODO add customizable "padding" value to enable space between the menu item and its surrounding outline/highlight
+                surfSize = uiItem['uiItem']._surface.get_size()
+                pygame.draw.rect(renderSurface, (192,128,0), (10, uiItem['uiItem']._position[1], surfSize[0], surfSize[1]), 2)
 
     def synchronize(self, initialKbSelection, maxKbSelection):
         """Set the index of the object selected by default (the keyboard highlight cursor), and the max kb selection index.
