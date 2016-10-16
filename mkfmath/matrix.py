@@ -30,6 +30,7 @@ from pymkfgame.mkfmath import common
 from pymkfgame.mkfmath.vector import Vector
 
 class Matrix(object):
+    # TODO maybe make a function that returns a composed XYZ rotation matrix (faster than composing the matrices by calling multiple individual rotation matrix multiplications
     @staticmethod
     def matRotX(th=0.0):
         """ Return a column-major matrix for rotation about the x axis, by th RADIANS

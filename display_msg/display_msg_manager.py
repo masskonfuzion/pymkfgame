@@ -27,7 +27,7 @@ class DisplayMessageManager(object):
         if fontPath:
             self.setFont(fontPath, fontSize)
         else:
-            self.setFont(SYSTEMDEFAULT, fontSize)   # TODO replace with the pygame default system font; or define SYSTEMDEFAULT to instruct setFont to use the default system font object
+            self._font = pygame.font.SysFont("pygame", fontSize, bold=False, italic=False)    # TODO replace with the pygame default system font; or define SYSTEMDEFAULT to instruct setFont to use the default system font object
 
         self._messages = [] # Start with an empty list
         self._maxMessages = 64  # Preallocate this many message slots; cycle through them
@@ -86,8 +86,7 @@ class DisplayMessageManager(object):
         # It's possible to return None here. Make sure to test for that case
         return retObj
 
-    def update(self, dt_s, game_stats_obj):
-        # TODO remove game_stats_obj.. This is an artifact from Falldown and may not be needed
+    def update(self, dt_s):
         for msg in self._messages:
             msg.update(dt_s)
 

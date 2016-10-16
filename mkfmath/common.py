@@ -1,4 +1,7 @@
+import math
+
 EPSILON = 1e-5
+DEGTORAD = math.pi / 180.0
 
 def isZero(num, threshold=EPSILON):
     """ Return true if a number is near 0
