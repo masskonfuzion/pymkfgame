@@ -18,6 +18,8 @@ import sys
 import pygame
 from pymkfgame.gameobj.gameobj import GameObj
 from pymkfgame.collision.common import CollisionGeomType
+from pymkfgame.mkfmath import vector
+from pymkfgame.mkfmath import matrix
 
 class AABB(GameObj):
     def __init__(self):
@@ -83,7 +85,7 @@ class AABB(GameObj):
     # NOTE: CollisionAABB doesn't have an update() method because 'updates' will be handled by the objects that own the AABB
 
 
-    def draw(self, surface):
+    def draw(self, surface, matView=matrix.Matrix.matIdent()):
         ''' Draw the AABB
 
             Note: Here we draw a line wireframe. We're not concerned with vertex order or hidden surface or any of that crap.
@@ -113,29 +115,38 @@ class AABB(GameObj):
         # 3 - 7
 
 
-        pt0 = ( self._minPt[0], self._minPt[1], self._minPt[2] )
-        pt1 = ( self._maxPt[0], self._minPt[1], self._minPt[2] )
-        pt2 = ( self._maxPt[0], self._maxPt[1], self._minPt[2] )
-        pt3 = ( self._minPt[0], self._maxPt[1], self._minPt[2] )
+        pt0 = vector.Vector( self._minPt[0], self._minPt[1], self._minPt[2], 1.0 )
+        pt1 = vector.Vector( self._maxPt[0], self._minPt[1], self._minPt[2], 1.0 )
+        pt2 = vector.Vector( self._maxPt[0], self._maxPt[1], self._minPt[2], 1.0 )
+        pt3 = vector.Vector( self._minPt[0], self._maxPt[1], self._minPt[2], 1.0 )
 
-        pt4 = ( self._minPt[0], self._minPt[1], self._maxPt[2] )
-        pt5 = ( self._maxPt[0], self._minPt[1], self._maxPt[2] )
-        pt6 = ( self._maxPt[0], self._maxPt[1], self._maxPt[2] )
-        pt7 = ( self._minPt[0], self._maxPt[1], self._maxPt[2] )
+        pt4 = vector.Vector( self._minPt[0], self._minPt[1], self._maxPt[2], 1.0 )
+        pt5 = vector.Vector( self._maxPt[0], self._minPt[1], self._maxPt[2], 1.0 )
+        pt6 = vector.Vector( self._maxPt[0], self._maxPt[1], self._maxPt[2], 1.0 )
+        pt7 = vector.Vector( self._minPt[0], self._maxPt[1], self._maxPt[2], 1.0 )
+
+        tpt0 = matrix.mMultvec(matView, pt0)    # the tpt0 means "transformed pt0"
+        tpt1 = matrix.mMultvec(matView, pt1)
+        tpt2 = matrix.mMultvec(matView, pt2)
+        tpt3 = matrix.mMultvec(matView, pt3)
+        tpt4 = matrix.mMultvec(matView, pt4)
+        tpt5 = matrix.mMultvec(matView, pt5)
+        tpt6 = matrix.mMultvec(matView, pt6)
+        tpt7 = matrix.mMultvec(matView, pt7)
 
         color = (0, 192, 0) # TODO eventually un-hardcode the debug draw color
-        pygame.draw.line( surface, color, (pt0[0], pt0[1]), (pt1[0], pt1[1]) ) # TODO - project 3D to 2D
-        pygame.draw.line( surface, color, (pt1[0], pt1[1]), (pt2[0], pt2[1]) )
-        pygame.draw.line( surface, color, (pt2[0], pt2[1]), (pt3[0], pt3[1]) )
-        pygame.draw.line( surface, color, (pt3[0], pt3[1]), (pt0[0], pt0[1]) )
+        pygame.draw.line( surface, color, (tpt0[0], tpt0[1]), (tpt1[0], tpt1[1]) )  # TODO - project 3D to 2D
+        pygame.draw.line( surface, color, (tpt1[0], tpt1[1]), (tpt2[0], tpt2[1]) )
+        pygame.draw.line( surface, color, (tpt2[0], tpt2[1]), (tpt3[0], tpt3[1]) )
+        pygame.draw.line( surface, color, (tpt3[0], tpt3[1]), (tpt0[0], tpt0[1]) )
 
-        pygame.draw.line( surface, color, (pt4[0], pt4[1]), (pt5[0], pt5[1]) )
-        pygame.draw.line( surface, color, (pt5[0], pt5[1]), (pt6[0], pt6[1]) )
-        pygame.draw.line( surface, color, (pt6[0], pt6[1]), (pt7[0], pt7[1]) )
-        pygame.draw.line( surface, color, (pt7[0], pt7[1]), (pt4[0], pt4[1]) )
+        pygame.draw.line( surface, color, (tpt4[0], tpt4[1]), (tpt5[0], tpt5[1]) )
+        pygame.draw.line( surface, color, (tpt5[0], tpt5[1]), (tpt6[0], tpt6[1]) )
+        pygame.draw.line( surface, color, (tpt6[0], tpt6[1]), (tpt7[0], tpt7[1]) )
+        pygame.draw.line( surface, color, (tpt7[0], tpt7[1]), (tpt4[0], tpt4[1]) )
 
-        pygame.draw.line( surface, color, (pt0[0], pt0[1]), (pt4[0], pt4[1]) )
-        pygame.draw.line( surface, color, (pt1[0], pt1[1]), (pt5[0], pt5[1]) )
-        pygame.draw.line( surface, color, (pt2[0], pt2[1]), (pt6[0], pt6[1]) )
-        pygame.draw.line( surface, color, (pt3[0], pt3[1]), (pt7[0], pt7[1]) )
+        pygame.draw.line( surface, color, (tpt0[0], tpt0[1]), (tpt4[0], tpt4[1]) )
+        pygame.draw.line( surface, color, (tpt1[0], tpt1[1]), (tpt5[0], tpt5[1]) )
+        pygame.draw.line( surface, color, (tpt2[0], tpt2[1]), (tpt6[0], tpt6[1]) )
+        pygame.draw.line( surface, color, (tpt3[0], tpt3[1]), (tpt7[0], tpt7[1]) )
 
