@@ -180,4 +180,9 @@ def vCross(v, w):
     """ Return a new Vector, which is the cross product, v x w """
     return Vector(v[1]*w[2] - w[1]*v[2], v[2]*w[0] - w[2]*v[0], v[0]*w[1] - w[0]*v[1])
 
+#ret0 = v1 * w2 - v2 * w1
+#ret1 = v2 * w0 - v0 * w2
+#ret2 = v0 * w1 - v1 * w0
+
+
 
