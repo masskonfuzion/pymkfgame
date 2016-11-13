@@ -125,15 +125,20 @@ class Vector(object):
         self.v[3] = 0.0
 ## ======================
 
-def vScale(v, k):
+def vScale(v, k, scale_w=False):
     """ Scale Vector v, in-place """
     v[0] *= float(k)
     v[1] *= float(k)
     v[2] *= float(k)
+    if scale_w:
+        v[3] *= float(k)
 
-def vGetScaled(v, k):
+def vGetScaled(v, k, scale_w=False):
     """ Return a new Vector, the result of scaling v by k """
-    return Vector(v[0] * float(k), v[1] * float(k), v[2] * float(k))
+    if scale_w:
+        return Vector(v[0] * float(k), v[1] * float(k), v[2] * float(k), v[3] * float(k))
+    else:
+        return Vector(v[0] * float(k), v[1] * float(k), v[2] * float(k))
 
 def vLength(v):
     """ Return Vector length """

@@ -282,8 +282,6 @@ def mMultvec(m, v):
     y = m[1]*v[0] + m[5]*v[1] + m[9] *v[2] + m[13]*v[3]
     z = m[2]*v[0] + m[6]*v[1] + m[10]*v[2] + m[14]*v[3]
     w = m[3]*v[0] + m[7]*v[1] + m[11]*v[2] + m[15]*v[3]
-    #w = v[3]*m[15]      # <-- shortcut to reduce the # of multiplications, for e.g. 
-
 
     return Vector(x, y, z, w)
 

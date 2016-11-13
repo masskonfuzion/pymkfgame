@@ -28,6 +28,7 @@ class GameObj(object):
         self._position = vector.Vector()
         #self._size = [2, 2]     # default size is 2 "pixels" by 2 pixels (1 "pixel" is a square on the 64x64 grid # TODO let's see if we can get rid of this for the 3D engine
         self._velocity = vector.Vector()
+        self._acceleration = vector.Vector()
         self._image = None
         self._rect = None
 

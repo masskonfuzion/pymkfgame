@@ -52,3 +52,21 @@ class ReferenceFrame(object):
         self.position[0], self.position[1], self.position[2], 1
         )
 
+    def getLookAtMatrix(self, eyeX, eyeY, eyeZ, ctrX, ctrY, ctrZ, upX, upY, upZ):
+        up = vGetNormalized( Vector(upX, upY, upZ) )
+
+        z = vGetNormalized( Vector(ctrX - eyeX, ctrY - eyeY, ctrZ - eyeZ) )   # z is a vector pointing 'forward' from the eye to the center point
+        x = vGetNormalized( vCross(up, z) )
+        y = vGetNormalized( vCross(z, x) )
+
+        return Matrix(x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, -eyeX, -eyeY, -eyeZ, 1)
+
+    def getPerspectiveProjectionMatrix(self, fovy, aspect, zNear, zFar):
+        ''' fovy is the field of view in the y direction (plays a role in calculating the view frustum (in degrees)
+            aspect is the ratio of width to height
+            zNear is the z coordinate of the near clipping plane
+            zFar is the z coordinate of the far clipping plane
+        '''
+        f = 1 / common.tann(fovy * common.DEGTORAD / 2.0) # Normally we'd prefer to multiply, because it's a faster CPU operation than division, but the point here is to pre-compute this value, anyway. We'll only do this once
+        return Matrix(f/aspect, 0.0, 0.0, 0.0, 0.0, f, 0.0, 0.0, 0.0, 0.0, (zNear + zFar) / (zNear - zFar), (2 * zNear * zFar) / (zNear - zFar), 0.0, 0.0, -1.0, 0.0)
+
