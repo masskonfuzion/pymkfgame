@@ -52,15 +52,24 @@ class ReferenceFrame(object):
         self.position[0], self.position[1], self.position[2], 1
         )
 
+    #def getLookAtMatrix(self, eyeX, eyeY, eyeZ, ctrX, ctrY, ctrZ, upX, upY, upZ):
+    #    up = Vector(upX, upY, upZ)  # No real need to normalize up, because we're going to normalize all of our vectors later
+    #    z = vGetNormalized( Vector(ctrX - eyeX, ctrY - eyeY, ctrZ - eyeZ) )   # z is a vector pointing 'forward' from the eye to the center point
+
+    #    # The potentially wrong way (using a "left-hand rule for cross products, which is probably not actually a thing...."
+    #    x = vGetNormalized( vCross(up, z) )
+    #    y = vGetNormalized( vCross(z, x) )
+
+    #    return Matrix(x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, -eyeX, -eyeY, -eyeZ, 1)
+
     def getLookAtMatrix(self, eyeX, eyeY, eyeZ, ctrX, ctrY, ctrZ, upX, upY, upZ):
+        eye = Vector(eyeX, eyeY, eyeZ)
         up = Vector(upX, upY, upZ)  # No real need to normalize up, because we're going to normalize all of our vectors later
         z = vGetNormalized( Vector(ctrX - eyeX, ctrY - eyeY, ctrZ - eyeZ) )   # z is a vector pointing 'forward' from the eye to the center point
-
-        # The potentially wrong way (using a "left-hand rule for cross products, which is probably not actually a thing...."
         x = vGetNormalized( vCross(up, z) )
         y = vGetNormalized( vCross(z, x) )
 
-        return Matrix(x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, -eyeX, -eyeY, -eyeZ, 1)
+        return Matrix(x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, -vDot(eye, x), -vDot(eye, y), -vDot(eye, z), 1)
 
     #def getPerspectiveProjectionMatrix(self, fovy, aspect, zNear, zFar):
     #    ''' fovy is the field of view in the y direction (plays a role in calculating the view frustum (in degrees)
