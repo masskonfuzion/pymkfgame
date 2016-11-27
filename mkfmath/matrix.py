@@ -117,6 +117,66 @@ class Matrix(object):
         return Matrix(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15)
 
     @staticmethod
+    def matRotArb(th, px, py, pz, dx, dy, dz):
+        """ Return a matrix for rotation about an arbitrary axis
+            p (x,y,z) defines a point that the axis goes through
+            d (x,y,z) defines the direction. d MUST BE NORMALIZED!
+        """
+        v0  = dx*dx + (dy*dy + dz*dz) * math.cos(th)
+        v1  = dx * dy * (1.0 - math.cos(th)) + dz * math.sin(th)
+        v2  = dx * dz * (1.0 - math.cos(th)) - dy * math.sin(th)
+        v3  = 0.0
+
+        v4  = dx * dy * (1.0 - math.cos(th)) - dz * math.sin(th)
+        v5  = dy*dy + (dx*dx + dz*dz) * math.cos(th)
+        v6  = dy * dz * (1.0 - math.cos(th)) + dx * math.sin(th)
+        v7  = 0.0
+
+        v8  = dx * dz * (1.0 - math.cos(th)) + dy * math.sin(th)
+        v9  = dy * dz * (1.0 - math.cos(th)) - dx * math.sin(th)
+        v10 = dz*dz * (dx*dx + dy*dy) * math.cos(th)
+        v11 = 0.0
+
+        v12 = (px * (dy*dy + dz*dz) - dx * (py*dy + pz*dz)) * (1 - math.cos(th)) + (py*dz - pz*dy) * math.sin(th)
+        v13 = (py * (dx*dx + dz*dz) - dy * (px*dx + pz*dz)) * (1 - math.cos(th)) + (pz*dx - px*dz) * math.sin(th)
+        v14 = (pz * (dx*dx + dy*dy) - dz * (px*dx + py*dy)) * (1 - math.cos(th)) + (px*dy - py*dx) * math.sin(th)
+        v15 = 1.0
+
+        return Matrix(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15)
+
+    @staticmethod
+    def matRotFromAxisAngle(th, ax, ay, az):
+        """ Compute a rotation matrix from an axis and angle
+
+            NOTE: The axis must be normalized, and th given in RADIANS
+        """
+        c = math.cos(th)
+        s = math.sin(th)
+        t = 1 - c
+
+        v0  = t*ax*ax + c
+        v1  = t*ax*ay - az*s
+        v2  = t*ax*az + ay*s
+        v3  = 0.0
+
+        v4  = t*ax*ay + az*s
+        v5  = t*ay*ay + c
+        v6  = t*ay*az - ax*s
+        v7  = 0.0
+
+        v8  = t*ax*az - ay*s
+        v9  = t*ay*az + ax*s
+        v10 = t*az*az + c
+        v11 = 0.0
+
+        v12 = 0.0
+        v13 = 0.0
+        v14 = 0.0
+        v15 = 1.0
+
+        return Matrix(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15)
+
+    @staticmethod
     def matScale(sx=1.0, sy=1.0, sz=1.0):
         v0  = sx
         v1  = 0.0
@@ -227,10 +287,10 @@ class Matrix(object):
                    float(v12), float(v13), float(v14), float(v15) ]
 
     def __str__(self):
-        s = """| {}  {}  {}  {} |
-| {}  {}  {}  {} |
-| {}  {}  {}  {} |
-| {}  {}  {}  {} |"""
+        s = """| {:06f}  {:06f}  {:06f}  {:06f} |
+| {:06f}  {:06f}  {:06f}  {:06f} |
+| {:06f}  {:06f}  {:06f}  {:06f} |
+| {:06f}  {:06f}  {:06f}  {:06f} |"""
 
         return s.format(self.v[0], self.v[4], self.v[8], self.v[12], self.v[1], self.v[5], self.v[9], self.v[13], self.v[2], self.v[6], self.v[10], self.v[14], self.v[3], self.v[7], self.v[11], self.v[15])
 
@@ -277,11 +337,20 @@ def mMultvec(m, v):
 
         Post-multiply m by v.
         Note: m is 4x4. v is 4x1. The resulting vector is 4x1
+
+        This function handles points with a homogeneous coordinate (i.e. 4D, w == 1), and true "vectors", 3D
     """
     x = m[0]*v[0] + m[4]*v[1] + m[8] *v[2] + m[12]*v[3]    # m[12] is, e.g. the position in matrix for tx (translate)
     y = m[1]*v[0] + m[5]*v[1] + m[9] *v[2] + m[13]*v[3]
     z = m[2]*v[0] + m[6]*v[1] + m[10]*v[2] + m[14]*v[3]
     w = m[3]*v[0] + m[7]*v[1] + m[11]*v[2] + m[15]*v[3]
+
+    # Handle homogeneous case
+    if v[3] == 1.0 and w != 1.0:
+        x /= w
+        y /= w
+        z /= w
+        w = 1.0
 
     return Vector(x, y, z, w)
 

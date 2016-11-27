@@ -53,20 +53,39 @@ class ReferenceFrame(object):
         )
 
     def getLookAtMatrix(self, eyeX, eyeY, eyeZ, ctrX, ctrY, ctrZ, upX, upY, upZ):
-        up = vGetNormalized( Vector(upX, upY, upZ) )
-
+        up = Vector(upX, upY, upZ)  # No real need to normalize up, because we're going to normalize all of our vectors later
         z = vGetNormalized( Vector(ctrX - eyeX, ctrY - eyeY, ctrZ - eyeZ) )   # z is a vector pointing 'forward' from the eye to the center point
+
+        # The potentially wrong way (using a "left-hand rule for cross products, which is probably not actually a thing...."
         x = vGetNormalized( vCross(up, z) )
         y = vGetNormalized( vCross(z, x) )
 
         return Matrix(x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, -eyeX, -eyeY, -eyeZ, 1)
 
+    #def getPerspectiveProjectionMatrix(self, fovy, aspect, zNear, zFar):
+    #    ''' fovy is the field of view in the y direction (plays a role in calculating the view frustum (in degrees)
+    #        aspect is the ratio of width to height
+    #        zNear is the z coordinate of the near clipping plane
+    #        zFar is the z coordinate of the far clipping plane
+    #    '''
+    #    f = 1 / common.tann(fovy / 2.0) # Normally we'd prefer to multiply, because it's a faster CPU operation than division, but the point here is to pre-compute this value, anyway. We'll only do this once
+    #    #return Matrix(f/aspect, 0.0, 0.0, 0.0, 0.0, f, 0.0, 0.0, 0.0, 0.0, (zNear + zFar) / (zNear - zFar), (2 * zNear * zFar) / (zNear - zFar), 0.0, 0.0, -1.0, 0.0)
+    #    return Matrix(f/aspect, 0.0, 0.0, 0.0, 0.0, f, 0.0, 0.0, 0.0, 0.0, -(zNear + zFar) / (zNear - zFar), -(2 * zNear * zFar) / (zNear - zFar), 0.0, 0.0, 1.0, 0.0)
+
     def getPerspectiveProjectionMatrix(self, fovy, aspect, zNear, zFar):
-        ''' fovy is the field of view in the y direction (plays a role in calculating the view frustum (in degrees)
-            aspect is the ratio of width to height
-            zNear is the z coordinate of the near clipping plane
-            zFar is the z coordinate of the far clipping plane
+        ''' Return a matrix that projects points into a normalized cube, from (-1,-1,-1) - (1,1,1)
+
+            NOTE: This matrix transforms points into the "clip" space defined by the cube. The actual clipping algorithm must be done elsewhere.
+            Also, viewport transformation must be done elsewhere
+
+            Note, this is for a left-handed coordinate system
         '''
-        f = 1 / common.tann(fovy * common.DEGTORAD / 2.0) # Normally we'd prefer to multiply, because it's a faster CPU operation than division, but the point here is to pre-compute this value, anyway. We'll only do this once
-        return Matrix(f/aspect, 0.0, 0.0, 0.0, 0.0, f, 0.0, 0.0, 0.0, 0.0, (zNear + zFar) / (zNear - zFar), (2 * zNear * zFar) / (zNear - zFar), 0.0, 0.0, -1.0, 0.0)
+        top = common.tann(fovy / 2.0) * zNear
+        bottom = -top
+        right = top * aspect
+        left = bottom * aspect
+
+        #return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, (right + left) / (right - left), (top + bottom) / (top - bottom), -(zFar + zNear) / (zFar - zNear), -1.0, 0.0, 0.0, -(2.0 * zFar * zNear) / (zFar - zNear), 0.0)   # This is for a right-handed coordinate system, I think
+        #return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, (right + left) / (right - left), (top + bottom) / (top - bottom), (zFar + zNear) / (zFar - zNear), 1.0, 0.0, 0.0, (2.0 * zFar * zNear) / (zFar - zNear), 0.0)
+        return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(zNear + zFar) / (zNear - zFar), 1.0, 0.0, 0.0, (2.0 * zNear * zFar) / (zNear - zFar), 0.0)
 

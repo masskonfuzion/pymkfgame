@@ -85,7 +85,7 @@ class AABB(GameObj):
     # NOTE: CollisionAABB doesn't have an update() method because 'updates' will be handled by the objects that own the AABB
 
 
-    def draw(self, surface, matView=matrix.Matrix.matIdent()):
+    def draw(self, surface, matView=matrix.Matrix.matIdent(), matViewport=matrix.Matrix.matIdent()):
         ''' Draw the AABB
 
             Note: Here we draw a line wireframe. We're not concerned with vertex order or hidden surface or any of that crap.
@@ -134,19 +134,30 @@ class AABB(GameObj):
         tpt6 = matrix.mMultvec(matView, pt6)
         tpt7 = matrix.mMultvec(matView, pt7)
 
+        vptpt0 = matrix.mMultvec(matViewport, tpt0)    # the vptpt0 means "viewport transformed pt0" (btw, all of this rendering code is terrible and should be taken out back and shot)
+        vptpt1 = matrix.mMultvec(matViewport, tpt1)
+        vptpt2 = matrix.mMultvec(matViewport, tpt2)
+        vptpt3 = matrix.mMultvec(matViewport, tpt3)
+        vptpt4 = matrix.mMultvec(matViewport, tpt4)
+        vptpt5 = matrix.mMultvec(matViewport, tpt5)
+        vptpt6 = matrix.mMultvec(matViewport, tpt6)
+        vptpt7 = matrix.mMultvec(matViewport, tpt7)
+
+
+
         color = (0, 192, 0) # TODO eventually un-hardcode the debug draw color
-        pygame.draw.line( surface, color, (tpt0[0], tpt0[1]), (tpt1[0], tpt1[1]) )  # TODO - project 3D to 2D
-        pygame.draw.line( surface, color, (tpt1[0], tpt1[1]), (tpt2[0], tpt2[1]) )
-        pygame.draw.line( surface, color, (tpt2[0], tpt2[1]), (tpt3[0], tpt3[1]) )
-        pygame.draw.line( surface, color, (tpt3[0], tpt3[1]), (tpt0[0], tpt0[1]) )
+        pygame.draw.line( surface, color, (vptpt0[0], vptpt0[1]), (vptpt1[0], vptpt1[1]) )  # TODO - project 3D to 2D
+        pygame.draw.line( surface, color, (vptpt1[0], vptpt1[1]), (vptpt2[0], vptpt2[1]) )
+        pygame.draw.line( surface, color, (vptpt2[0], vptpt2[1]), (vptpt3[0], vptpt3[1]) )
+        pygame.draw.line( surface, color, (vptpt3[0], vptpt3[1]), (vptpt0[0], vptpt0[1]) )
 
-        pygame.draw.line( surface, color, (tpt4[0], tpt4[1]), (tpt5[0], tpt5[1]) )
-        pygame.draw.line( surface, color, (tpt5[0], tpt5[1]), (tpt6[0], tpt6[1]) )
-        pygame.draw.line( surface, color, (tpt6[0], tpt6[1]), (tpt7[0], tpt7[1]) )
-        pygame.draw.line( surface, color, (tpt7[0], tpt7[1]), (tpt4[0], tpt4[1]) )
+        pygame.draw.line( surface, color, (vptpt4[0], vptpt4[1]), (vptpt5[0], vptpt5[1]) )
+        pygame.draw.line( surface, color, (vptpt5[0], vptpt5[1]), (vptpt6[0], vptpt6[1]) )
+        pygame.draw.line( surface, color, (vptpt6[0], vptpt6[1]), (vptpt7[0], vptpt7[1]) )
+        pygame.draw.line( surface, color, (vptpt7[0], vptpt7[1]), (vptpt4[0], vptpt4[1]) )
 
-        pygame.draw.line( surface, color, (tpt0[0], tpt0[1]), (tpt4[0], tpt4[1]) )
-        pygame.draw.line( surface, color, (tpt1[0], tpt1[1]), (tpt5[0], tpt5[1]) )
-        pygame.draw.line( surface, color, (tpt2[0], tpt2[1]), (tpt6[0], tpt6[1]) )
-        pygame.draw.line( surface, color, (tpt3[0], tpt3[1]), (tpt7[0], tpt7[1]) )
+        pygame.draw.line( surface, color, (vptpt0[0], vptpt0[1]), (vptpt4[0], vptpt4[1]) )
+        pygame.draw.line( surface, color, (vptpt1[0], vptpt1[1]), (vptpt5[0], vptpt5[1]) )
+        pygame.draw.line( surface, color, (vptpt2[0], vptpt2[1]), (vptpt6[0], vptpt6[1]) )
+        pygame.draw.line( surface, color, (vptpt3[0], vptpt3[1]), (vptpt7[0], vptpt7[1]) )
 

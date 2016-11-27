@@ -40,6 +40,8 @@ class Vector(object):
         self.v[item] = float(value)
 
     def __neg__(self):
+        """ Return a new vector that is the negation of "this" vector
+        """
         return Vector(-self.v[0], -self.v[1], -self.v[2])
 
     def __eq__(self, v):
