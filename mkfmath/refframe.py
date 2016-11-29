@@ -69,7 +69,8 @@ class ReferenceFrame(object):
         x = vGetNormalized( vCross(up, z) )
         y = vGetNormalized( vCross(z, x) )
 
-        return Matrix(x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, -vDot(eye, x), -vDot(eye, y), -vDot(eye, z), 1)
+        #return Matrix(x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, -vDot(eye, x), -vDot(eye, y), -vDot(eye, z), 1)
+        return Matrix(x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, -vDot(eye, x), -vDot(eye, y), vDot(eye, z), 1)    # This is what is needed for left hand coordinate system - the translation puts the model into the space in front of the camera. i.e. if the camera is mapped to 0,0,0, then a visible object is at -xpos, -ypos, zpos (because +z is in front of the camera). This is different than the right-handed coordinate frame, in which objects visible to the camera have a negative z position
 
     #def getPerspectiveProjectionMatrix(self, fovy, aspect, zNear, zFar):
     #    ''' fovy is the field of view in the y direction (plays a role in calculating the view frustum (in degrees)
@@ -94,7 +95,11 @@ class ReferenceFrame(object):
         right = top * aspect
         left = bottom * aspect
 
-        #return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, (right + left) / (right - left), (top + bottom) / (top - bottom), -(zFar + zNear) / (zFar - zNear), -1.0, 0.0, 0.0, -(2.0 * zFar * zNear) / (zFar - zNear), 0.0)   # This is for a right-handed coordinate system, I think
+        return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, (right + left) / (right - left), (top + bottom) / (top - bottom), -(zFar + zNear) / (zFar - zNear), -1.0, 0.0, 0.0, -(2.0 * zFar * zNear) / (zFar - zNear), 0.0)   # This is for a right-handed coordinate system, I think (from scratchapixel.com)
         #return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, (right + left) / (right - left), (top + bottom) / (top - bottom), (zFar + zNear) / (zFar - zNear), 1.0, 0.0, 0.0, (2.0 * zFar * zNear) / (zFar - zNear), 0.0)
-        return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(zNear + zFar) / (zNear - zFar), 1.0, 0.0, 0.0, (2.0 * zNear * zFar) / (zNear - zFar), 0.0)
+        #return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(zNear + zFar) / (zNear - zFar), 1.0, 0.0, 0.0, (2.0 * zNear * zFar) / (zNear - zFar), 0.0)   # Self-derived coefficients.. Are they correct? Or wrong? I think it is wrong.. I think the NDC cube mapping needs to be in the opposite handed-ness of the normal coordinate system. That's because the pinhole camera model implemented by a projection matrix uses the eye (camera position) as the point of convergence (i.e., the "vanishing" point, but on-screen, the vanishing point needs to be off in the distance. I.e., the NDC cube needs to be the z-flip of the camera system. Sooo, see below
+        #return Matrix(2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 
+        #              0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0,
+        #              -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(zFar + zNear) / (zFar - zNear), 1.0,
+        #              0.0, 0.0, (2.0 * zFar * zNear) / (zFar - zNear), 0.0)   # Self-derived coefficients.. Did the equations by hand.. I trust this (but it doesn't give me the expected result when cam z < 0; only when cam z > 0.. But I don't understand why
 
