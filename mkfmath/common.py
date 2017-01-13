@@ -2,7 +2,7 @@ import math
 
 EPSILON = 1e-5
 DEGTORAD = math.pi / 180.0
-RADTODEG = math.pi * 180.0
+RADTODEG = 180.0 / math.pi
 
 COSS = [ math.cos(th * DEGTORAD) for th in range(0, 360) ]  # Note that Python allows negative indexes, which happen to work flawlessly here. In other languages, you'll need to correct indiexes out of range of 0..360
 SINN = [ math.sin(th * DEGTORAD) for th in range(0, 360) ]
@@ -36,6 +36,18 @@ def isZero(num, threshold=EPSILON):
 
 def floatEq(a, b, threshold=EPSILON):
     return abs(a - b) < threshold
+
+def floatLt(a, b, threshold=EPSILON):
+    return a < b + threshold
+
+def floatLte(a, b, threshold=EPSILON):
+    return a <= b + threshold
+
+def floatGt(a, b, threshold=EPSILON):
+    return a > b - threshold
+
+def floatGte(a, b, threshold=EPSILON):
+    return a >= b - threshold
 
 def floatStr(n):
     if n < EPSILON:

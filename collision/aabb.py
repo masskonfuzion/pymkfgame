@@ -21,7 +21,7 @@ from pymkfgame.collision.common import CollisionGeomType
 from pymkfgame.mkfmath import vector
 from pymkfgame.mkfmath import matrix
 
-class AABB(GameObj):
+class AABB(GameObj):    # TODO decide.. should collision geometry derive from GameObj?
     def __init__(self):
         super(AABB, self).__init__()
 
